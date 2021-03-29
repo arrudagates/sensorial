@@ -15,6 +15,7 @@ use openlimits::{
 };
 use rust_decimal::Decimal;
 use std::sync::Mutex;
+use std::io::{self, Write};
 
 async fn init_binance() -> OpenLimitsWs<BinanceWebsocket> {
     OpenLimitsWs {
@@ -76,12 +77,14 @@ fn arbitrage(ex: &str, asks: Vec<AskBid>, bids: Vec<AskBid>) {
                     //       .iter()
                     //       .find(|v| v.qty == bid_b.qty && bid_b.price > v.price);
                     // if iter != None {
+                    print!("\r");
+                    io::stdout().flush().unwrap();
                     println!(
-                        "Buy on A for {} and Sell on B for {} at the amount of {}",
+                        "Buy on A for {:.2} and Sell on B for {:.2} at the amount of {}",
                         //iter.unwrap().price,
                         ask_a.price,
                         bid_b.price,
-                        bid_b.qty
+                        bid_b.qty.normalize()
                     );
                     *state_a = Data {
                         asks: None,
@@ -91,6 +94,8 @@ fn arbitrage(ex: &str, asks: Vec<AskBid>, bids: Vec<AskBid>) {
                         asks: None,
                         bids: None,
                     };
+                    print!("\nLooking for arbitrage opportunities...");
+                   io::stdout().flush().unwrap();
                     return;
                     //}
                 }
@@ -109,12 +114,14 @@ fn arbitrage(ex: &str, asks: Vec<AskBid>, bids: Vec<AskBid>) {
                     //        .iter()
                     //        .find(|v| v.qty == bid_a.qty && bid_a.price > v.price);
                     //     if iter != None {
+                    print!("\r");
+                   io::stdout().flush().unwrap();
                     println!(
-                        "Buy on B for {} and Sell on A for {} at the amount of {}",
+                        "Buy on B for {:.2} and Sell on A for {:.2} at the amount of {}",
                         //iter.unwrap().price,
                         ask_b.price,
                         bid_a.price,
-                        bid_a.qty
+                        bid_a.qty.normalize()
                     );
                     *state_a = Data {
                         asks: None,
@@ -124,6 +131,8 @@ fn arbitrage(ex: &str, asks: Vec<AskBid>, bids: Vec<AskBid>) {
                         asks: None,
                         bids: None,
                     };
+                    print!("\nLooking for arbitrage opportunities...");
+                   io::stdout().flush().unwrap();
                     return;
                     //    }
                 }
