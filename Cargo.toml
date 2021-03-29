@@ -10,7 +10,5 @@ edition = "2018"
 openlimits = "*"
 tokio = { version = "1", features = ["full"] }
 futures = "*"
-nash-native-client = { version = "=0.1.21", default-features = false, features = ["rustcrypto"] }
-dotenv = "*"
 lazy_static = "*"
 rust_decimal = "*"
