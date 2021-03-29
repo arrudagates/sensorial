@@ -14,8 +14,8 @@ use openlimits::{
     },
 };
 use rust_decimal::Decimal;
-use std::sync::Mutex;
 use std::io::{self, Write};
+use std::sync::Mutex;
 
 async fn init_binance() -> OpenLimitsWs<BinanceWebsocket> {
     OpenLimitsWs {
@@ -48,8 +48,8 @@ lazy_static! {
 }
 
 fn arbitrage(ex: &str, asks: Vec<AskBid>, bids: Vec<AskBid>) {
-    let mut state_a = DATA_A.lock().unwrap();
-    let mut state_b = DATA_B.lock().unwrap();
+    let mut state_a = DATA_A.lock().expect("Failed to get a lock on state_a");
+    let mut state_b = DATA_B.lock().expect("Failed to get a lock on state_b");
     match ex {
         "a" => {
             *state_a = Data {
@@ -73,15 +73,10 @@ fn arbitrage(ex: &str, asks: Vec<AskBid>, bids: Vec<AskBid>) {
                     && bid_b.price > ask_a.price
                     && bid_b.qty > Decimal::new(0, 8)
                 {
-                    //     let iter = a
-                    //       .iter()
-                    //       .find(|v| v.qty == bid_b.qty && bid_b.price > v.price);
-                    // if iter != None {
                     print!("\r");
-                    io::stdout().flush().unwrap();
+                    io::stdout().flush().expect("Failed to flush stdout");
                     println!(
                         "Buy on A for {:.2} and Sell on B for {:.2} at the amount of {}",
-                        //iter.unwrap().price,
                         ask_a.price,
                         bid_b.price,
                         bid_b.qty.normalize()
@@ -95,9 +90,8 @@ fn arbitrage(ex: &str, asks: Vec<AskBid>, bids: Vec<AskBid>) {
                         bids: None,
                     };
                     print!("\nLooking for arbitrage opportunities...");
-                   io::stdout().flush().unwrap();
+                    io::stdout().flush().expect("Failed to flush stdout");
                     return;
-                    //}
                 }
             }
         }
@@ -110,15 +104,10 @@ fn arbitrage(ex: &str, asks: Vec<AskBid>, bids: Vec<AskBid>) {
                     && bid_a.price > ask_b.price
                     && bid_a.qty > Decimal::new(0, 8)
                 {
-                    //  let iter = b
-                    //        .iter()
-                    //        .find(|v| v.qty == bid_a.qty && bid_a.price > v.price);
-                    //     if iter != None {
                     print!("\r");
-                   io::stdout().flush().unwrap();
+                    io::stdout().flush().expect("Failed to flush stdout");
                     println!(
                         "Buy on B for {:.2} and Sell on A for {:.2} at the amount of {}",
-                        //iter.unwrap().price,
                         ask_b.price,
                         bid_a.price,
                         bid_a.qty.normalize()
@@ -132,9 +121,8 @@ fn arbitrage(ex: &str, asks: Vec<AskBid>, bids: Vec<AskBid>) {
                         bids: None,
                     };
                     print!("\nLooking for arbitrage opportunities...");
-                   io::stdout().flush().unwrap();
+                    io::stdout().flush().expect("Failed to flush stdout");
                     return;
-                    //    }
                 }
             }
         }
@@ -155,7 +143,7 @@ async fn orderbook_b() {
             }
         })
         .await
-        .unwrap();
+        .expect("Failed to subscribe to orderbook on Binance");
 }
 async fn orderbook_c() {
     let client = init_coinbase().await;
@@ -171,7 +159,7 @@ async fn orderbook_c() {
             }
         })
         .await
-        .unwrap();
+        .expect("Failed to subscribe to orderbook on Coinbase");
 }
 
 #[tokio::main]
