@@ -176,6 +176,7 @@ async fn orderbook_c() {
 
 #[tokio::main]
 async fn main() {
+    println!("Welcome! Arbitrage opportunities will show up as they happen.\n");
     orderbook_b().await;
     orderbook_c().await;
     loop {}
